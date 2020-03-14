@@ -1,13 +1,14 @@
 import hashlib
 import requests
-
 import sys
-
-from uuid import uuid4
-
 from timeit import default_timer as timer
 
-import random
+
+print('Constructing hash dictionary...')
+hash_dict = {}
+for i in range(16**6):
+    key = hashlib.sha256(str(i).encode()).hexdigest()[:6]
+    hash_dict[key] = i
 
 
 def proof_of_work(last_proof):
@@ -27,10 +28,17 @@ def proof_of_work(last_proof):
     print(f'{last_hash}')
     print("Searching for next proof")
 
-    proof = 0
     #  TODO: Your code here
-    while not valid_proof(last_hash, str(proof)):
-        proof += 1
+    # check dictionary first, if proof not found, 
+    # calculate it and save it to the dictionary
+    try:
+        proof = hash_dict[last_hash[-6:]]
+        print('Find a proof in the hash dictionary')
+    except:
+        proof = 0
+        while not valid_proof(last_hash, str(proof)):
+            proof += increment
+        hash_dict[last_hash[-6:]] = proof
 
     print("Proof " + str(proof) + " found in " + str(timer() - start) + " seconds")
     return proof
@@ -48,23 +56,6 @@ b4e3821b8a221550ed46e3ab523e1b5e9fde151aa823dbc87956f32e01668251
 Searching for next proof
 '''
 
-'''
-(base) PS D:\github\Lambda-Blockchain-Sprint-Challenge\blockchain> python miner.py
-ID is XXX
-Last proof: 1039329374
-d5d8247a9e49c1cb20209065eba42b08f76db430cb4bdae99459adccffe65b20
-Searching for next proof
-Proof 7346774 found in 8.683314 seconds
-Proof valid but already submitted.
-Last proof: 2915060
-d6911a8268d6679f70aed345fe62b33f7b3137e11016f05af7eaf1b120f8a7df
-Searching for next proof
-Proof 559950 found in 0.6877739999999992 seconds
-Total coins mined: 1
-Last proof: 559950
-f8a7df0fbf9a1891f40ee3292bf3b611b40016e61eac91fdc1041a3d1a3f2928
-Searching for next proof
-'''
 
 def valid_proof(last_hash, proof):
     """

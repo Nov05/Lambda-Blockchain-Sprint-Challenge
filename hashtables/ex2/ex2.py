@@ -19,7 +19,7 @@ def reconstruct_trip(tickets, length):
     """
     YOUR CODE HERE
     """
-    for i,t in enumerate(tickets):
+    for t in tickets:
         hash_table_insert(hashtable, t.destination, t.source) # hash table, key, value
         if t.destination=='NONE':
             route[-1] = t.source
